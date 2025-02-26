@@ -7,11 +7,7 @@
 #include <ctime>
 using namespace std;
 
-void fillBoard(char (*board)[5]);
-void printBoard(char playerboard[5][5]);
-void aiGuess(char playerboard[5][5]);
-void playerGuess(char aiboard[5][5]);
-void clearScreen();
+#include "main.h"
 
 void viewBoard(char aiboard[5][5]);
 int main()
@@ -32,7 +28,7 @@ int main()
 
   char aiboard[5][5];
   char playerboard[5][5];
- 
+
   bool playerLost = false;
   bool aiLost = false;
 
@@ -45,9 +41,9 @@ int main()
       playerboard[i][j] = '_';
     }
   }
-  int choice;
 
   fillBoard(aiboard);
+  int choice;
 
   do
   {
@@ -63,8 +59,6 @@ int main()
       cout << "Enter the x and y coordinates for ship " << i + 1 << endl;
       int x, y;
       cin >> x >> y;
-      x--;
-      y--;
 
       // check if x and y are in range
       if (x < 0 || x > 4 || y < 0 || y > 4)
@@ -98,7 +92,7 @@ int main()
   int guess = 0;
   while (!playerLost && !aiLost && guess < 20)
   {
-    
+
     playerGuess(aiboard);
     aiGuess(playerboard);
     guess++;
@@ -114,8 +108,6 @@ int main()
     {
       for (int j = 0; j < 5; j++)
       {
-        // playerLost = playerboard[i][j] != 's';
-        // aiLost = aiboard[i][j] != 's';
         if (playerboard[i][j] == 's')
         {
           playerLost = false;
@@ -131,7 +123,8 @@ int main()
       break;
     }
   }
-  if (guess >= 20) {
+  if (guess >= 20)
+  {
     cout << "You ran out of guesses!" << endl;
   }
   else if (playerLost)
@@ -166,7 +159,7 @@ void fillBoard(char (*board)[5])
 
 void printBoard(char playerboard[5][5])
 {
-    cout << "───────────────────────────────────────────────────────────\n";
+  cout << "───────────────────────────────────────────────────────────\n";
   for (int i = 0; i < 5; i++)
   {
     for (int j = 0; j < 5; j++)
@@ -186,6 +179,8 @@ void aiGuess(char playerboard[5][5])
     x = rand() % 5;
     y = rand() % 5;
   } while (playerboard[x][y] == 'x' || playerboard[x][y] == 'o');
+
+  cout << "Ai guessed: (" << x << ", " << y << ")" << endl;
 
   if (playerboard[x][y] == 's')
   {
@@ -209,15 +204,18 @@ void playerGuess(char aiboard[5][5])
   cin >> x >> y;
   clearScreen();
 
-  x--;
-  y--;
-
-  if (x < 0 || x >= 5 || y < 0 || y >= 5)
+  if (x < 0 || x > 4 || y < 0 || y > 4)
   {
-    cout << "Please enter values between 1 and 5:" << endl;
+    cout << "Please enter values between 0 and 4 (inclusive):" << endl;
+    playerGuess(aiboard);
+  }
+  else if (aiboard[x][y] == 'x' || aiboard[x][y] == 'o')
+  {
+    cout << "You already guessed that spot!" << endl;
     playerGuess(aiboard);
   }
 
+  cout << "You guessed: (" << x << ", " << y << ")" << endl;
   if (aiboard[x][y] == 's')
   {
     cout << "Hit!" << endl;
@@ -232,13 +230,14 @@ void playerGuess(char aiboard[5][5])
   cout << "This is how the Ai's board looks now: " << endl;
   viewBoard(aiboard);
 }
+
 void clearScreen()
 {
-    #ifdef _WIN32 //windows
-        system("cls");
-    #else //other os
-        system("clear");
-    #endif
+#ifdef _WIN32 // windows
+  system("cls");
+#else // other os
+  system("clear");
+#endif
 }
 
 void viewBoard(char aiboard[5][5])
