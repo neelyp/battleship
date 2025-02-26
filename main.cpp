@@ -1,14 +1,19 @@
 // Paul and Neer
 // 2D Array Game
 // 2/19/25
-// Alblas
+// Extra: User can input their own ship values
 
 #include <iostream>
 #include <ctime>
-#include "main.h"
-
 using namespace std;
 
+void fillBoard(char (*board)[5]);
+void printBoard(char playerboard[5][5]);
+void aiGuess(char playerboard[5][5]);
+void playerGuess(char aiboard[5][5]);
+void clearScreen();
+
+void viewBoard(char aiboard[5][5]);
 int main()
 {
   srand(time(0));
@@ -16,17 +21,18 @@ int main()
   const char hit = 'x';
   const char miss = 'o';
 
-  cout << ".______        ___    .___________.___________. __       _______     _______. __    __   __  .______   \n";
-  cout << "|   _  \\     /   \\  |           |           ||  |     |   ____|   /       ||  |  |  | |  | |   _  \\  \n";
-  cout << "|  |_)  |    /  ^  \\ `---|  |----`---|  |----`|  |     |  |__     |   (----`|  |__|  | |  | |  |_)   | \n";
-  cout << "|   _  <    /  /_\\ \\    |  |        |  |     |  |     |   __|     \\   \\  |      __  |  | |  | ___/  \n";
+  cout << ".______        ___   .___________.___________. __       _______     _______. __    __   __  .______   \n";
+  cout << "|   _  \\      /   \\  |           |           ||  |     |   ____|   /       ||  |  |  | |  | |   _  \\  \n";
+  cout << "|  |_)  |    /  ^  \\ ---|  |-------|  |----|  |     |  |__     |   (----|  |__|  | |  | |  |_)  | \n";
+  cout << "|   _  <    /  /_\\  \\    |  |        |  |     |  |     |   __|     \\   \\    |   __   | |  | |   ___/  \n";
   cout << "|  |_)  |  /  _____  \\   |  |        |  |     |  `----.|  |____.----)   |   |  |  |  | |  | |  |      \n";
-  cout << "|______/  /__/    \\__\\  |__|        |__|     |_______||_______|_______/    |__|  |__| |__| | _|      \n";
+  cout << "|______/  /__/     \\__\\  |__|        |__|     |_______||_______|_______/    |__|  |__| |__| | _|      \n";
+  cout << "                                                                                                       \n";
   cout << "──────────────────────────────────────────────────────────────────────────────────────────────────\n";
 
   char aiboard[5][5];
   char playerboard[5][5];
-
+ 
   bool playerLost = false;
   bool aiLost = false;
 
@@ -52,7 +58,7 @@ int main()
   switch (choice)
   {
   case 1:
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 3; i++)
     {
       cout << "Enter the x and y coordinates for ship " << i + 1 << endl;
       int x, y;
@@ -70,7 +76,7 @@ int main()
       {
         if (playerboard[x][y] == 's')
         {
-          cout << "you already have a ship there" << endl;
+          cout << "You already have a ship there!" << endl;
           i--;
         }
         else
@@ -89,11 +95,15 @@ int main()
   }
 
   // Game loop
-
-  while (!playerLost && !aiLost)
+  int guess = 0;
+  while (!playerLost && !aiLost && guess < 20)
   {
+    
     playerGuess(aiboard);
     aiGuess(playerboard);
+    guess++;
+
+    cout << "Guesses (20 max): " << guess << endl;
 
     playerLost = true;
     aiLost = true;
@@ -121,8 +131,10 @@ int main()
       break;
     }
   }
-
-  if (playerLost)
+  if (guess >= 20) {
+    cout << "You ran out of guesses!" << endl;
+  }
+  else if (playerLost)
   {
     cout << "You lost!" << endl;
   }
@@ -154,6 +166,7 @@ void fillBoard(char (*board)[5])
 
 void printBoard(char playerboard[5][5])
 {
+    cout << "───────────────────────────────────────────────────────────\n";
   for (int i = 0; i < 5; i++)
   {
     for (int j = 0; j < 5; j++)
@@ -162,6 +175,7 @@ void printBoard(char playerboard[5][5])
     }
     cout << endl;
   }
+  cout << "───────────────────────────────────────────────────────────\n";
 }
 
 void aiGuess(char playerboard[5][5])
@@ -191,15 +205,16 @@ void aiGuess(char playerboard[5][5])
 void playerGuess(char aiboard[5][5])
 {
   int x, y;
-  cout << "enter cords for your guess" << endl;
+  cout << "Enter cords for your guess:" << endl;
   cin >> x >> y;
+  clearScreen();
 
   x--;
   y--;
 
   if (x < 0 || x >= 5 || y < 0 || y >= 5)
   {
-    cout << "please enter values between 1 and 5." << endl;
+    cout << "Please enter values between 1 and 5:" << endl;
     playerGuess(aiboard);
   }
 
@@ -217,10 +232,19 @@ void playerGuess(char aiboard[5][5])
   cout << "This is how the Ai's board looks now: " << endl;
   viewBoard(aiboard);
 }
+void clearScreen()
+{
+    #ifdef _WIN32 //windows
+        system("cls");
+    #else //other os
+        system("clear");
+    #endif
+}
 
 void viewBoard(char aiboard[5][5])
 {
   // print without showing location of ships
+  cout << "───────────────────────────────────────────────────────────\n";
   for (int i = 0; i < 5; i++)
   {
     for (int j = 0; j < 5; j++)
@@ -236,4 +260,5 @@ void viewBoard(char aiboard[5][5])
     }
     cout << endl;
   }
+  cout << "───────────────────────────────────────────────────────────\n";
 }
